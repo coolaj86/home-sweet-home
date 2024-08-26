@@ -7,3 +7,6 @@
 !/.config/envman/alias.env
 !/.config/envman/functions.sh
 !/.config/envman/functions.fish
+!/.config/fish/
+!/.config/fish/config.fish
+!/.profile
