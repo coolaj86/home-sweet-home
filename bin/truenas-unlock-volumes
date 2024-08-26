@@ -1,0 +1,141 @@
+#!/bin/sh
+set -e
+set -u
+
+g_version="1.0.0"
+g_build="2024-08-26"
+g_author="AJ ONeal <aj@therootcompany.com> (https://bnna.net)"
+g_license="CC0-1.0"
+g_license_url="https://creativecommons.org/publicdomain/zero/1.0/"
+
+if test "version" = "${1:-}" || test "--version" = "${1:-}" || test "-V" = "${1:-}"; then
+    echo "truenas-unlock-volumes v${g_version} (${g_build})"
+    echo "copyright 2024 ${g_author} (${g_license} license)"
+    echo "${g_license_url}"
+    exit 0
+fi
+
+if test "help" = "${1:-}" || test "--help" = "${1:-}"; then
+    {
+        echo "truenas-unlock-volumes v${g_version} (${g_build})"
+        echo "copyright 2024 ${g_author} (${g_license} license)"
+        echo "${g_license_url}"
+        echo ""
+        echo "USAGE"
+        echo "    truenas-unlock-volumes"
+        echo ""
+        echo "CONFIG"
+        echo ""
+        echo "  ~/.config/truenas/env:"
+        echo "      # note: no trailing /"
+        echo "      export TRUENAS_BASE_URL=https://truenas.local"
+        # shellcheck disable=SC2016 # use of literal $ is intentional
+        echo '      # from ${TRUENAS_BASE_URL}/ui/apikeys'
+        echo "      export TRUENAS_API_KEY=abc123"
+        echo ""
+    } >&2
+    exit 0
+fi
+
+if ! test -s ~/.config/truenas/env; then
+    mkdir -p ~/.config/truenas/
+    {
+        echo '# Example'
+        echo '#     export TRUENAS_BASE_URL=https://truenas.local'
+        echo '#     export TRUENAS_API_KEY=abc123 # from https://<truenas>/ui/apikeys'
+    } > ~/.config/truenas/env
+fi
+if ! grep -q -v -E '^\s*(#.*)?$' ~/.config/truenas/env; then
+    {
+        echo ""
+        echo "ERROR"
+        echo "    Missing ~/.config/truenas/env"
+        echo ""
+        echo "SOLUTION"
+        echo "    Create and save an API key from https://truenas.local/ui/apikeys"
+        echo ""
+    } >&2
+    exit 1
+fi
+
+# shellcheck disable=SC1090
+. ~/.config/truenas/env
+if test -z "${TRUENAS_BASE_URL:-}" || test -z "${TRUENAS_API_KEY:-}"; then
+    {
+        echo ""
+        echo "ERROR"
+        echo "    Missing config from ~/.config/truenas/env"
+        echo ""
+        echo "SOLUTION"
+        echo "    Set the config in this format:"
+        echo "      export TRUENAS_BASE_URL=https://truenas.local # no trailing slash"
+        echo "      export TRUENAS_API_KEY=abc123"
+        echo ""
+    } >&2
+    exit 1
+fi
+
+if ! test -s ~/.config/truenas/zfs-passphrases.conf; then
+    {
+        echo ""
+        echo "ERROR"
+        echo "    Missing ~/.config/truenas/zfs-passphrases.conf"
+        echo ""
+        echo "SOLUTION"
+        echo "    Set the passphrases in this format:"
+        echo "      tank1/Data:foo bar baz"
+        echo "      tankN/VolumeName:pass phrase goes here"
+        echo ""
+    } >&2
+    exit 1
+fi
+
+fn_list() { (
+    b_dataset_url="${TRUENAS_BASE_URL}/api/v2.0/pool/dataset"
+    echo "    GET ${b_dataset_url} (listing dataset ids)..." >&2
+    curl --fail-with-body -sS -k "${b_dataset_url}" \
+        -H "Authorization: Bearer ${TRUENAS_API_KEY}" |
+        jq -r '.[] | select(.encrypted == true) | .id'
+); }
+
+fn_unlock() { (
+    b_dataset_id="${1}"
+    b_dataset_phrase="${2}"
+
+    b_unlock_url="${TRUENAS_BASE_URL}/api/v2.0/pool/dataset/unlock"
+    printf "    POST %s (unlocking %s)..." "${b_unlock_url}" "${b_dataset_id}" >&2
+    curl --fail-with-body -sS -k "${b_unlock_url}" \
+        -H "Authorization: Bearer ${TRUENAS_API_KEY}" \
+        -H "Content-Type: application/json" \
+        -d '{ "id": "'"${b_dataset_id}"'"
+            , "unlock_options": {
+                "recursive": true,
+                "datasets": [
+                  { "name": "'"${b_dataset_id}"'"
+                  , "passphrase": "'"${b_dataset_phrase}"'"}
+                ]
+              }
+            }'
+    echo " unlocked" >&2
+); }
+
+main() { (
+    b_truenas_zfs_phrases="$(grep -v -E '^\s*(#.*)?$' ~/.config/truenas/zfs-passphrases.conf)"
+    echo "Unlocking TrueNAS..." >&2
+    fn_list | while read -r b_dataset_id; do
+        b_dataset_phrase="$(
+            echo "${b_truenas_zfs_phrases}" |
+                grep -F "${b_dataset_id}:" |
+                cut -d':' -f2
+        )"
+        if test -z "${b_dataset_phrase}"; then
+            echo "    SKIP '${b_dataset_id}': no passphrase" >&2
+            continue
+        fi
+
+        fn_unlock "${b_dataset_id}" "${b_dataset_phrase}"
+    done
+    echo "Done"
+); }
+
+main
