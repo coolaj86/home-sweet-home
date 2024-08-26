@@ -2,3 +2,8 @@
 !.gitignore
 !/bin/
 !/bin/**
+!/.config/
+!/.config/envman/
+!/.config/envman/alias.env
+!/.config/envman/functions.sh
+!/.config/envman/functions.fish
