@@ -1,0 +1,18 @@
+#!/bin/sh
+# shellcheck disable=SC1090
+set -e
+set -u
+
+sudo apk update --no-cache
+sudo apk add --no-cache curl sudo openssh xz unzip
+
+sudo apk add --no-cache fish git htop screen vim wget zip
+
+curl https://webi.sh/ssh-pubkey | sh
+. ~/.config/envman/PATH.env
+ssh-pubkey
+echo 'screen -xRS awesome -s fish' >> ~/.profile
+
+webi rg vim-essentials vim-commentary vim-go go-essentials
+
+sudo apk add --no-cache bash
