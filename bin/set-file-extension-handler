@@ -112,11 +112,11 @@ main() { (
     )"
 
     echo ""
-    echo "set ${b_app} (${b_app_id}) as default app for..."
+    printf "set \033[32m%s\033[0m \033[2m(%s)\033[0m as default app for...\n" "${b_app}" "${b_app_id}"
     echo ""
     while test -n "${1:-}"; do
         b_extension="${1}"
-        echo "    ${b_extension}" >&2
+        printf "    \033[33m%s\033[0m\n" "${b_extension}"
         duti -s "${b_app_id}" "${b_extension}" all
         shift
     done
