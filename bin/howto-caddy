@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+set -u
+
+echo ''
+echo 'Caddy Hints'
+echo ''
+echo '    caddy file-server --browse --listen :3080'
+echo ''
+echo '    caddy run --config ./Caddyfile --adapter caddyfile'
+echo ''
