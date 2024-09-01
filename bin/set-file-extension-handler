@@ -1,0 +1,127 @@
+#!/bin/sh
+set -e
+set -u
+
+fn_version() { (
+    echo "set-file-extension-handler v1.0.1 (2024-08-31)"
+); }
+
+fn_help() { (
+    echo ""
+    echo "USAGE"
+    echo "        set-file-extension-handler <app> <extensions>"
+    echo ""
+    echo "EXAMPLES"
+    echo "        set-file-extension-handler 'Brave Browser' .html .htm .svg"
+    echo "        set-file-extension-handler 'BBEdit' .css .go .js .json .rs .sh .ts .txt .zig"
+    echo "        set-file-extension-handler 'Markdown Editor' .mkdn .md"
+    echo ""
+); }
+
+fn_ensure_duti() { (
+    if command -v duti > /dev/null; then
+        return
+    fi
+
+    printf "\n"
+    printf "MISSING 'duti'\n\n"
+    printf "    'duti' is required to set file extension handlers\n"
+    printf "    https://formulae.brew.sh/formula/duti \n"
+    printf "\n"
+    printf "Install 'duti' now? [Y/n] "
+    read -r b_yes
+
+    case "${b_yes:-}" in
+        "NO" | "No" | "N" | "no" | "n")
+            {
+                echo "abort: install 'duti', then run again"
+                echo "    brew install duti"
+            } >&2
+            exit 1
+            ;;
+        *) ;;
+    esac
+
+    if ! command -v brew > /dev/null; then
+        printf "\n"
+        printf "MISSING 'brew'\n\n"
+        printf "    'brew' can install 'duti', which doesn't have its own releases\n"
+        printf "    https://webinstall.dev/brew/ \n"
+        printf "    https://docs.brew.sh/Installation#alternative-installs \n"
+        printf "\n"
+        printf "Install 'brew' now? [Y/n] "
+        read -r b_yes
+
+        case "${b_yes:-}" in
+            "NO" | "No" | "N" | "no" | "n")
+                {
+                    echo "abort: install 'brew' and 'duti', then run again"
+                    echo "    curl https://webi.sh/brew | sh"
+                    echo "    source ~/.config/envman/PATH.env"
+                    echo "    brew install duti"
+                } >&2
+                exit 1
+                ;;
+            *) ;;
+        esac
+
+        curl --fail-with-body -sS https://webi.sh/brew | sh
+        # shellcheck disable=SC1090
+        . ~/.config/envman/PATH.env
+    fi
+
+    {
+        brew install duti
+        echo ""
+        if duti -h 2>&1 | grep -q 'duti -s'; then
+            echo "'duti' installed successfully"
+        else
+            echo "warn: 'duti' not installed correctly, or help output has changed"
+        fi
+        echo ""
+    } >&2
+    sleep 0.3
+); }
+
+main() { (
+    case "${1:-}" in
+        "")
+            fn_help >&2
+            exit 1
+            ;;
+        "--help" | "help")
+            fn_version
+            fn_help
+            exit 0
+            ;;
+        "-V" | "--version" | "version")
+            fn_version
+            exit 0
+            ;;
+    esac
+
+    fn_ensure_duti
+
+    b_app=${1}
+    shift
+    # Example:
+    #   osascript -e 'id of app "Brave Browser Beta"'
+    #   osascript -e 'id of app "CotEditor"'
+    b_app_id="$(
+        osascript -e "id of app \"${b_app}\""
+    )"
+
+    echo ""
+    echo "set ${b_app} (${b_app_id}) as default app for..."
+    echo ""
+    while test -n "${1:-}"; do
+        b_extension="${1}"
+        echo "    ${b_extension}" >&2
+        duti -s "${b_app_id}" "${b_extension}" all
+        shift
+    done
+    echo ""
+    echo "done"
+); }
+
+main "${@:-}"
