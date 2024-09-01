@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+set -u
+
+printf '
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Example</title>
+
+        \033[33m<link rel="icon" type="image/png" href="./favicon.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="./favicon-48x48.png" sizes="48x48">
+        <link rel="icon" type="image/png" href="./favicon-64x64.png" sizes="64x64">\033[0m
+
+        <link rel="stylesheet" href="./mvp.css">
+    </head>
+    <body>
+    </body>
+</html>
+'
