@@ -7,11 +7,12 @@ echo LANG=en_US.UTF-8 | tee /etc/default/locale
 wget -O - https://webi.sh/ssh-adduser | sh
 
 sudo apt update
-sudo apt-get install -y curl fish git htop screen vim xz-utils zip
+sudo apt-get install -y curl fish git htop screen vim wget xz-utils unzip
 
 curl https://webi.sh/ssh-pubkey | sh
 . ~/.config/envman/PATH.env
 ssh-pubkey
 echo 'screen -xRS awesome -s fish' >> ~/.profile
+webi ssh-authorize
 
 webi rg vim-essentials vim-commentary vim-go go-essentials
