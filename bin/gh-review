@@ -1,0 +1,52 @@
+#!/bin/sh
+set -e
+set -u
+
+# The goal here is to be able to copy and paste from the limited info
+# that we get from Github and review a PR _The Right Way™_.,
+
+if test -z "${2:-}"; then
+    echo ""
+    echo "Usage:"
+    echo '    gh-review <project-name> <fork-abbrev> [branch-name] [fork-project-name]'
+    echo ""
+    echo "Example:"
+    echo "    gh-review awesome-sauce rando:patch-1 add-feature-x"
+    echo ""
+    echo "Scenario:"
+    echo "    - You maintain 'github.com/you/awesome-sauce'"
+    echo "    - A PR comes in from 'guthub.com/rando/awesome-sauce'"
+    echo "    - They've used the default branch name of 'patch-1'"
+    echo "    - You want to work on this as branch 'add-feature-x'"
+    echo ""
+    exit 1
+fi
+
+my_repo="${1}"
+my_pr="${2}"
+pr_remote="$(echo "${my_pr}" | cut -d':' -f1 | tr '[:upper:]' '[:lower:]')"
+pr_branch="$(echo "${my_pr}" | cut -d':' -f2-)"
+pr_branch_safe="$(echo "${pr_branch}" | sed 's:/:_:g')"
+our_branch="${3:-"${pr_branch}"}"
+their_repo="${4:-"${my_repo}"}"
+
+echo git remote add "${pr_remote}" "ssh://git@github.com/${pr_remote}/${their_repo}.git" || true
+git remote add "${pr_remote}" "ssh://git@github.com/${pr_remote}/${their_repo}.git" || true
+echo git fetch "${pr_remote}"
+git fetch "${pr_remote}"
+echo git checkout -b "${our_branch}" "${pr_remote}/${pr_branch}" '||' git checkout "${our_branch}"
+git checkout -b "${our_branch}" "${pr_remote}/${pr_branch}" || git checkout "${our_branch}"
+echo ""
+echo "Here are your next steps:"
+mkdir -p ./gh-review-branchs/
+{
+    echo "    git rebase main"
+    echo "    git rebase -i main"
+    echo "    git push --force '${pr_remote}' '${our_branch}':'${pr_branch}'"
+    echo ""
+    echo "    #git remote rm '${pr_remote}'"
+    echo "    #git branch -d '${our_branch}'"
+    echo "    #git branch -d '${pr_branch}'"
+} > "./gh-review-branchs/${our_branch}-${pr_remote}-${pr_branch_safe}.sh"
+cat "./gh-review-branchs/${our_branch}-${pr_remote}-${pr_branch_safe}.sh"
+echo ""
