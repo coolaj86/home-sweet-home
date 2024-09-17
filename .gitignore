@@ -4,6 +4,7 @@
 !/bin/**
 !/.config/
 !/.config/envman/
+!/.config/envman/ENV.env
 !/.config/envman/alias.env
 !/.config/envman/functions.sh
 !/.config/envman/functions.fish
