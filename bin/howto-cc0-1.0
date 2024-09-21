@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+set -u
+
+echo '
+https://therootcompany.com/blog/how-to-release-software-into-the-public-domain/
+
+<project name> - <short project description>
+
+Written in 2024 by AJ ONeal <aj@therootcompany.com>
+To the extent possible under law, the author(s) have dedicated all copyright
+and related and neighboring rights to this software to the public domain
+worldwide. This software is distributed without any warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication along with
+this software. If not, see <https://creativecommons.org/publicdomain/zero/1.0/>.'
+
+echo ''
+echo ''
+
+echo 'https://www.mozilla.org/en-US/MPL/headers/
+
+# Any copyright is dedicated to the Public Domain.
+# https://creativecommons.org/publicdomain/zero/1.0/'
