@@ -10,7 +10,9 @@
 
 -- ex: add conventional "my" extension with client params for pgp and raw encryption
 SET SESSION "my"."client_id" = '12345678';
-SET SESSION "my"."aes_128_key" = 'deadbeefbadc0ffee0ddf00dcafebabe';
+-- note: MUST be cast to ::bytea explicitly
+--       SELECT current_setting('my.aes_128_key')::bytea;
+SET SESSION "my"."aes_128_key" = E'\\xdeadbeefbadc0ffee0ddf00dcafebabe';
 SET SESSION "my"."pgp_password" = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo right';
 
 -- ex: add arbitrary "foo" extension params for various debug and audit parameters
@@ -22,7 +24,7 @@ SET SESSION "foo"."role" = 'read-only-user';
 --
 -- SELECT
 --     current_setting('my.client_id') AS client_id,
---     current_setting('my.aes_128_key') AS client_id,
+--     current_setting('my.aes_128_key')::bytea AS client_id,
 --     current_setting('foo.test_user_id') AS user_id,
 --     current_setting('foo.test_timezone') AS timezone;
 --

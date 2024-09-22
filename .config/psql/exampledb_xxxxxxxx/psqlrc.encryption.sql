@@ -5,7 +5,7 @@
 \pset pager off
 
 -- ex: add "my" extension params to test pgp and raw encryption
-SET SESSION "my"."aes_128_key" = 'deadbeefbadc0ffee0ddf00dcafebabe';
+SET SESSION "my"."aes_128_key" = E'\\xdeadbeefbadc0ffee0ddf00dcafebabe';
 SET SESSION "my"."pgp_password" = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo right';
 
 \echo ''
@@ -46,7 +46,7 @@ FROM
 -- https://www.postgresql.org/docs/current/pgcrypto.html#PGCRYPTO-RAW-ENC-FUNCS
 
 -- convenience functions to reduce boilerplate within queries themselves
-CREATE OR REPLACE FUNCTION encrypt_aes_cbc(plain_text text, aes_key_hex text)
+CREATE OR REPLACE FUNCTION encrypt_aes_cbc(plain_text text, aes_key bytea)
 RETURNS bytea
 LANGUAGE sql
 IMMUTABLE
@@ -55,10 +55,10 @@ AS $$
     -- encrypt(data bytea, key bytea, type text) returns bytea
     -- encrypt_iv(data bytea, key bytea, iv bytea, type text) returns bytea
     -- default 'type' is 'aes-cbc/pad:pkcs'
-    SELECT encrypt(convert_to(plain_text, 'UTF8'), decode(aes_key_hex, 'hex'), 'aes')
+    SELECT encrypt(convert_to(plain_text, 'UTF8'), aes_key, 'aes')
 $$;
 
-CREATE OR REPLACE FUNCTION decrypt_aes_cbc(encrypted_data bytea, aes_key_hex text)
+CREATE OR REPLACE FUNCTION decrypt_aes_cbc(encrypted_data bytea, aes_key bytea)
 RETURNS text
 LANGUAGE sql
 IMMUTABLE
@@ -67,7 +67,7 @@ AS $$
     -- decrypt(data bytea, key bytea, type text) returns bytea
     -- decrypt_iv(data bytea, key bytea, iv bytea, type text) returns bytea
     -- default 'type' is 'aes-cbc/pad:pkcs'
-    SELECT convert_from(decrypt(encrypted_data, decode(aes_key_hex, 'hex'), 'aes'), 'UTF8')
+    SELECT convert_from(decrypt(encrypted_data, aes_key, 'aes'), 'UTF8')
 $$;
 
 WITH "raw_example_table_cte" AS (
@@ -75,14 +75,14 @@ WITH "raw_example_table_cte" AS (
         'sensitive data (raw)' AS "plain_original",
         encrypt_aes_cbc(
             'sensitive data (raw)',
-            current_setting('my.aes_128_key')
+            current_setting('my.aes_128_key')::bytea
         ) AS "raw_enc_column"
 )
 SELECT
     "plain_original",
     decrypt_aes_cbc(
         "raw_enc_column",
-        current_setting('my.aes_128_key')
+        current_setting('my.aes_128_key')::bytea
     ) AS "plain_decrypted",
     "raw_enc_column"
 FROM
