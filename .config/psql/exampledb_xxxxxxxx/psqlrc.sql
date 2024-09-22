@@ -10,7 +10,7 @@
 
 -- ex: add conventional "my" extension with client params for pgp and raw encryption
 SET SESSION "my"."client_id" = '12345678';
-SET SESSION "my"."aes_128_key" = 'deadbeefbadc0ffee0ddf00dcafebabe';
+SET SESSION "my"."aes_128_key" = E'\\xdeadbeefbadc0ffee0ddf00dcafebabe';
 SET SESSION "my"."pgp_password" = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo right';
 
 -- ex: add arbitrary "foo" extension params for various debug and audit parameters

@@ -5,7 +5,7 @@
 \pset pager off
 
 -- ex: add "my" extension params to test pgp and raw encryption
-SET SESSION "my"."aes_128_key" = 'deadbeefbadc0ffee0ddf00dcafebabe';
+SET SESSION "my"."aes_128_key" = E'\\xdeadbeefbadc0ffee0ddf00dcafebabe';
 SET SESSION "my"."pgp_password" = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo right';
 
 \echo ''
@@ -55,7 +55,7 @@ AS $$
 	-- encrypt(data bytea, key bytea, type text) returns bytea
 	-- encrypt_iv(data bytea, key bytea, iv bytea, type text) returns bytea
     -- default 'type' is 'aes-cbc/pad:pkcs'
-    SELECT encrypt(convert_to(plain_text, 'UTF8'), decode(aes_key_hex, 'hex'), 'aes')
+    SELECT encrypt(convert_to(plain_text, 'UTF8'), aes_key_hex, 'aes')
 $$;
 
 CREATE OR REPLACE FUNCTION decrypt_aes_cbc(encrypted_data bytea, aes_key_hex text)
@@ -67,7 +67,7 @@ AS $$
 	-- decrypt(data bytea, key bytea, type text) returns bytea
 	-- decrypt_iv(data bytea, key bytea, iv bytea, type text) returns bytea
     -- default 'type' is 'aes-cbc/pad:pkcs'
-    SELECT convert_from(decrypt(encrypted_data, decode(aes_key_hex, 'hex'), 'aes'), 'UTF8')
+    SELECT convert_from(decrypt(encrypted_data, aes_key_hex, 'aes'), 'UTF8')
 $$;
 
 WITH "raw_example_table_cte" AS (
