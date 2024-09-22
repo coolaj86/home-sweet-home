@@ -18,11 +18,12 @@ SET SESSION "foo"."test_user_id" = '0192183e-b61-77c5-aeea-2d735b0f0881';
 SET SESSION "foo"."test_timezone" = 'America/New_York';
 SET SESSION "foo"."role" = 'read-only-user';
 
--- ex: use anywhere that you can select
+-- ex: you can use SESSION params anywhere that you can SELECT
 --
 -- SELECT
 --     current_setting('my.client_id') AS client_id,
---     current_setting('my.test_user_id') AS user_id,
---     current_setting('my.test_timezone') AS timezone;
+--     current_setting('my.aes_128_key') AS client_id,
+--     current_setting('foo.test_user_id') AS user_id,
+--     current_setting('foo.test_timezone') AS timezone;
 --
--- SELECT * FROM "customers" WHERE "user_id" = current_setting('my.test_user_id');
+-- SELECT * FROM "customers" WHERE "user_id" = current_setting('foo.test_user_id');

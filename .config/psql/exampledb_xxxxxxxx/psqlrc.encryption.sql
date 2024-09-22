@@ -79,7 +79,6 @@ WITH "raw_example_table_cte" AS (
         ) AS "raw_enc_column"
 )
 SELECT
-	-- session_decrypt(raw_enc_column::bytea) AS plain_text,
     "plain_original",
     decrypt_aes_cbc(
         "raw_enc_column",
