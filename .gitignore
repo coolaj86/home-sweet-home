@@ -14,3 +14,5 @@
 !/.psqlrc
 !/.config/psql/
 !/.config/psql/psqlrc.sql
+!/.config/psql/exampledb_xxxxxxxx/
+!/.config/psql/exampledb_xxxxxxxx/**

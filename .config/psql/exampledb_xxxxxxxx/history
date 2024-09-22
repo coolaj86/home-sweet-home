@@ -1,0 +1,6 @@
+_HiStOrY_V2_
+\d
+SELECT * FROM "customers";
+SELECT * FROM "customers" \gx
+\x
+SELECT * FROM "customers";
