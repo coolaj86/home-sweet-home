@@ -34,10 +34,10 @@ SELECT
     -- pgp_sym_decrypt(msg bytea, psw text [, options text ]) returns text
     -- pgp_sym_decrypt_bytea(msg bytea, psw text [, options text ]) returns bytea
     pgp_sym_decrypt(
-        "pgp_enc_column"::bytea,
-        current_setting('my.pgp_password')::text,
-        'cipher-algo=aes128, unicode-mode=1'::text
-    )::text AS "plain_decrypted",
+        "pgp_enc_column",
+        current_setting('my.pgp_password'),
+        'cipher-algo=aes128, unicode-mode=1'
+    ) AS "plain_decrypted",
     "pgp_enc_column"
 FROM
     "pgp_example_table_cte" \gx
