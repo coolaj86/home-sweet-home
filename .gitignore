@@ -13,4 +13,4 @@
 !/.profile
 !/.psqlrc
 !/.config/psql/
-!/.config/psql/psqlrc
+!/.config/psql/psqlrc.sql
