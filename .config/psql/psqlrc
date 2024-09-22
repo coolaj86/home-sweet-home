@@ -13,6 +13,7 @@
         \echo [WARN] could not create :dbrc
     \else
         \echo loading :dbrc
+        \i :dbrc
     \endif
     \if `test -f :HISTFILE || touch :HISTFILE && chmod 0600 :HISTFILE && echo n || echo y`
         \echo [WARN] could not create :HISTFILE
