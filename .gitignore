@@ -11,3 +11,6 @@
 !/.config/fish/
 !/.config/fish/config.fish
 !/.profile
+!/.psqlrc
+!/.config/psql/
+!/.config/psql/psqlrc
