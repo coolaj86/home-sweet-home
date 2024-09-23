@@ -24,13 +24,13 @@ WITH "pgp_example_table_cte" AS (
     SELECT
         'sensitive data (pgp)' AS "plain_original",
         pgp_sym_encrypt(
-			'sensitive data (pgp)',
-			current_setting('my.pgp_password'),
+            'sensitive data (pgp)',
+            current_setting('my.pgp_password'),
             'cipher-algo=aes128, unicode-mode=1'
         ) AS "pgp_enc_column"
 )
 SELECT
-    plain_original,
+    "plain_original",
     -- pgp_sym_decrypt(msg bytea, psw text [, options text ]) returns text
     -- pgp_sym_decrypt_bytea(msg bytea, psw text [, options text ]) returns bytea
     pgp_sym_decrypt(
@@ -52,8 +52,8 @@ LANGUAGE sql
 IMMUTABLE
 PARALLEL SAFE
 AS $$
-	-- encrypt(data bytea, key bytea, type text) returns bytea
-	-- encrypt_iv(data bytea, key bytea, iv bytea, type text) returns bytea
+    -- encrypt(data bytea, key bytea, type text) returns bytea
+    -- encrypt_iv(data bytea, key bytea, iv bytea, type text) returns bytea
     -- default 'type' is 'aes-cbc/pad:pkcs'
     SELECT encrypt(convert_to(plain_text, 'UTF8'), decode(aes_key_hex, 'hex'), 'aes')
 $$;
@@ -64,8 +64,8 @@ LANGUAGE sql
 IMMUTABLE
 PARALLEL SAFE
 AS $$
-	-- decrypt(data bytea, key bytea, type text) returns bytea
-	-- decrypt_iv(data bytea, key bytea, iv bytea, type text) returns bytea
+    -- decrypt(data bytea, key bytea, type text) returns bytea
+    -- decrypt_iv(data bytea, key bytea, iv bytea, type text) returns bytea
     -- default 'type' is 'aes-cbc/pad:pkcs'
     SELECT convert_from(decrypt(encrypted_data, decode(aes_key_hex, 'hex'), 'aes'), 'UTF8')
 $$;
@@ -74,17 +74,17 @@ WITH "raw_example_table_cte" AS (
     SELECT
         'sensitive data (raw)' AS "plain_original",
         encrypt_aes_cbc(
-			'sensitive data (raw)',
-			current_setting('my.aes_128_key')
-		) AS "raw_enc_column"
+            'sensitive data (raw)',
+            current_setting('my.aes_128_key')
+        ) AS "raw_enc_column"
 )
 SELECT
 	-- session_decrypt(raw_enc_column::bytea) AS plain_text,
-    plain_original,
-	decrypt_aes_cbc(
-		raw_enc_column,
-		current_setting('my.aes_128_key')
-	) AS "plain_decrypted",
+    "plain_original",
+    decrypt_aes_cbc(
+        "raw_enc_column",
+        current_setting('my.aes_128_key')
+    ) AS "plain_decrypted",
     "raw_enc_column"
 FROM
     "raw_example_table_cte" \gx
