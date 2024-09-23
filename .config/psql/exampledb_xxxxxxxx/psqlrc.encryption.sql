@@ -61,7 +61,10 @@ WITH "aes_key_cte" AS (
 SELECT
     "plain_original",
     "raw_enc_column",
-    convert_from(decrypt("raw_enc_column", "aes_key", 'aes'), 'UTF8') AS "plain_decrypted"
+	convert_from(decrypt("raw_enc_column", "aes_key", 'aes'), 'UTF8') AS "plain_decrypted",
+    convert_from(decrypt_iv(
+        "raw_enc_column", "aes_key", E'\\x00000000000000000000000000000000', 'aes'),
+    'UTF8') AS "plain_decrypted_iv"
 FROM
     "raw_example_table_cte"
 \gx
