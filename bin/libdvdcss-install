@@ -1,0 +1,22 @@
+#!/bin/sh
+#shellcheck disable=SC1090
+set -e
+set -u
+
+if ! command -v brew > /dev/null; then
+    curl https://webi.sh/brew | sh
+    . ~/.config/envman/PATH.env
+fi
+
+if ! test -d ~/.local/opt/brew/Cellar/libdvdcss/; then
+    brew install libdvdcss
+fi
+
+echo 'sudo mkdir -p /usr/local/lib'
+sudo mkdir -p /usr/local/lib/
+sudo rm -f /usr/local/lib/libdvdcss.* || true
+
+# note symlinks don't seem to work for VLC, Handbrake, etc
+echo 'sudo cp -RPp ~/.local/opt/brew/Cellar/libdvdcss/1.4.3/lib/libdvdcss*.dylib /usr/local/lib/'
+sudo cp -RPp ~/.local/opt/brew/Cellar/libdvdcss/1.4.3/lib/libdvdcss.2.dylib /usr/local/lib/
+sudo cp -RPp ~/.local/opt/brew/Cellar/libdvdcss/1.4.3/lib/libdvdcss.dylib /usr/local/lib/
