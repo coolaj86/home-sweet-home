@@ -9,42 +9,53 @@ SET SESSION "my"."aes_128_key" = E'\\xdeadbeefbadc0ffee0ddf00dcafebabe';
 SET SESSION "my"."pgp_password" = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo right';
 
 \echo ''
-\echo '===================================================='
-\echo '= Example: Using session parameters for encryption ='
-\echo '===================================================='
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 \echo ''
 
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
+\echo '==================================================='
+\echo '=              PGP Example Table CTE              ='
+\echo '==================================================='
+\echo ''
 -- pgp_sym encrypt / decrypt example
 -- https://www.postgresql.org/docs/current/pgcrypto.html#PGCRYPTO-PGP-ENC-FUNCS
-WITH "pgp_example_table_cte" AS (
-    -- pgp_sym_encrypt(data text, psw text [, options text ]) returns bytea
-    -- pgp_sym_encrypt_bytea(data bytea, psw text [, options text ]) returns bytea
+WITH "pgp_pass_cte" AS (
     SELECT
         'sensitive data (pgp)' AS "plain_original",
+        current_setting('my.pgp_password') AS "pgp_pass"
+),
+"pgp_example_table_cte" AS (
+    SELECT
+        -- pgp_sym_encrypt(data text, psw text [, options text ]) returns bytea
+        -- pgp_sym_encrypt_bytea(data bytea, psw text [, options text ]) returns bytea
         pgp_sym_encrypt(
             'sensitive data (pgp)',
-            current_setting('my.pgp_password'),
+            "pgp_pass",
             'cipher-algo=aes128, unicode-mode=1'
         ) AS "pgp_enc_column"
+    FROM
+        "pgp_pass_cte"
 )
 SELECT
     "plain_original",
+    "pgp_enc_column",
     -- pgp_sym_decrypt(msg bytea, psw text [, options text ]) returns text
     -- pgp_sym_decrypt_bytea(msg bytea, psw text [, options text ]) returns bytea
     pgp_sym_decrypt(
         "pgp_enc_column",
-        current_setting('my.pgp_password'),
+        "pgp_pass",
         'cipher-algo=aes128, unicode-mode=1'
-    ) AS "plain_decrypted",
-    "pgp_enc_column"
+    ) AS "plain_decrypted"
 FROM
-    "pgp_example_table_cte" \gx
+    "pgp_example_table_cte"
+    CROSS JOIN "pgp_pass_cte"
+\gx
 
+\echo '==================================================='
+\echo '=           Raw Encryption Example CTE            ='
+\echo '==================================================='
+\echo ''
 -- raw encrypt / decrypt example
 -- https://www.postgresql.org/docs/current/pgcrypto.html#PGCRYPTO-RAW-ENC-FUNCS
-
 WITH "aes_key_cte" AS (
     SELECT
         current_setting('my.aes_128_key')::bytea AS "aes_key",
@@ -61,7 +72,7 @@ WITH "aes_key_cte" AS (
 SELECT
     "plain_original",
     "raw_enc_column",
-	convert_from(decrypt("raw_enc_column", "aes_key", 'aes'), 'UTF8') AS "plain_decrypted",
+    convert_from(decrypt("raw_enc_column", "aes_key", 'aes'), 'UTF8') AS "plain_decrypted",
     convert_from(decrypt_iv(
         "raw_enc_column", "aes_key", E'\\x00000000000000000000000000000000', 'aes'),
     'UTF8') AS "plain_decrypted_iv"
@@ -133,10 +144,13 @@ AS $$
     SELECT convert_from(decrypt($1, "pg_temp".my_key(), 'aes'), 'UTF8')
 $$;
 
+\echo '==================================================='
+\echo '=           Raw Encryption Example VIEW           ='
+\echo '==================================================='
+\echo ''
 --
 -- Examples Using the Convenience Functions and Views
 --
-
 CREATE TEMPORARY TABLE IF NOT EXISTS "encrypted_pii_table" (
     "number" SERIAL PRIMARY KEY,
     "first_name" VARCHAR(255),
@@ -170,15 +184,9 @@ SELECT * FROM "decrypted_pii_view";
 \echo '=              Try it for yourself!               ='
 \echo '==================================================='
 \echo ''
-\echo 'SELECT * FROM "encrypted_pii_table";'
-\echo 'SELECT * FROM "decrypted_pii_view";'
-\echo 'SELECT "first_name", pg_temp.my_decrypt("$last_name") AS "last_name" FROM "encrypted_pii_table";'
-\echo ''
-
-\echo ''
-\echo '===================================================='
-\echo '=                  End of Example                  ='
-\echo '===================================================='
+\echo '    SELECT * FROM "encrypted_pii_table";'
+\echo '    SELECT * FROM "decrypted_pii_view";'
+\echo '    SELECT pg_temp.my_decrypt("$last_name") AS "last_name" FROM "encrypted_pii_table";'
 \echo ''
 
 \pset pager on
