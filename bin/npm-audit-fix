@@ -1,0 +1,7 @@
+#!/bin/sh
+#shellcheck disable=SC2048,SC2086 # we want whitespace breaks
+set -e
+set -u
+
+# run npm directly without 'socket npm'
+$(command -v npm) audit fix $*
