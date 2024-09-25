@@ -134,7 +134,7 @@ AS $$
 $$;
 
 -- conveniently wraps the key and decryption to be efficient across whole queries
--- DROP FUNCTION IF EXISTS "my_decrypt" (text);
+-- DROP FUNCTION IF EXISTS "my_decrypt" (bytea);
 CREATE OR REPLACE FUNCTION "pg_temp".my_decrypt(bytea)
 RETURNS text
 LANGUAGE sql

@@ -4,9 +4,10 @@
 -- Per-DB Configuration
 --
 \set HISTFILE ~/.config/psql/ :DBNAME /history
-\set dbrc ~/.config/psql/ :DBNAME /psqlrc.sql
-\if `mkdir -p :CONFDIR && chmod 0700 :CONFDIR && echo n || echo y`
-    \echo [WARN] could not create :CONFDIR
+\set confdir ~/.config/psql/ :DBNAME
+\set dbrc :confdir /psqlrc.sql
+\if `mkdir -p :confdir && chmod 0700 :confdir && echo n || echo y`
+    \echo [WARN] could not create :confdir
     \set HISTFILE ~/.config/psql/history
 \else
     \if `test -f :dbrc || touch :dbrc && chmod 0600 :dbrc && echo n || echo y`
