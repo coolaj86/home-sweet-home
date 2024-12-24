@@ -1,0 +1,23 @@
+#!/bin/sh
+#shellcheck disable=SC2029
+set -e
+set -u
+
+g_build_host="${1}"
+g_build_tag="${2:-$(hostname)}"
+g_build_ver="${3:-17.2}"
+
+ssh "${g_build_host}" "
+    rm -rf ~/postgresql-* || true
+    rm -rf ~/postgres-* || true
+    rm -rf ~/psql-* || true
+
+    rm -rf ~/.local/opt/pg-essentials
+    mkdir -p ~/.local/opt/
+    (
+      cd ~/.local/opt/ || exit 1
+      git clone https://github.com/bnnanet/pg-essentials ./pg-essentials
+    )
+
+    ~/.local/opt/pg-essentials/pg-build '${g_build_tag}' '${g_build_ver}'
+"
