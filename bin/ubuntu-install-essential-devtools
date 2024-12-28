@@ -7,7 +7,7 @@ echo LANG=en_US.UTF-8 | tee /etc/default/locale
 wget -O - https://webi.sh/ssh-adduser | sh
 
 sudo apt-get update
-sudo apt-get install -y curl fish git htop screen vim wget xz-utils unzip
+sudo apt-get install -y curl fish git htop less screen vim wget xz-utils unzip
 
 curl https://webi.sh/ssh-pubkey | sh
 . ~/.config/envman/PATH.env

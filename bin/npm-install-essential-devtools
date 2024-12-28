@@ -5,14 +5,16 @@ set -u
 (
     cd /tmp/
 
-    npm install --location=global \
-        @socketsecurity/cli@latest
+    # npm install --location=global \
+    #     @socketsecurity/cli@latest
 
-    socket npm install --location=global \
+    # socket npm install --location=global \
+    #    jswt@2.x \
+    npm install --location=global \
         fixjson@1.x \
         jshint@2.x \
-        jswt@1.x \
         prettier@3.x \
         typescript@5.x \
+        typedoc \
         uglify-js@3.x
 )
