@@ -4,10 +4,18 @@ set -e
 set -u
 
 apt-get update
-apt-get dist-upgrade
-apt-get install -y curl fish git htop less screen vim wget xz-utils unzip zstd
+apt-get dist-upgrade -y
+apt-get install -y curl fish git htop less screen sudo vim wget xz-utils unzip zstd
 
-echo LANG=en_US.UTF-8 | tee /etc/default/locale
+#dpkg-reconfigure locales
+echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+echo 'LANG=en_US.UTF-8' > /etc/locale.conf
+ln -sf /etc/locale.conf /etc/default/locale
+source /etc/locale.conf
+locale-gen
+
+#dpkg-reconfigure tzdata
+timedatectl set-timezone America/Denver
 
 wget -O - https://webi.sh/ssh-utils | sh
 . ~/.config/envman/PATH.env
@@ -16,7 +24,7 @@ ssh-adduser 'app'
 
 curl https://webi.sh/ssh-pubkey | sh
 ssh-pubkey
-echo 'screen -xRS awesome -s fish' >> ~/.profile
+echo 'screen -xRS main -s fish' >> ~/.profile
 webi ssh-authorize
 
-webi aliasman rg vim-essentials vim-commentary vim-go go-essentials
+webi aliasman serviceman setcap-netbind rg vim-essentials vim-commentary vim-go go-essentials
