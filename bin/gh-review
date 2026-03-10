@@ -24,18 +24,19 @@ fi
 
 my_repo="${1}"
 my_pr="${2}"
-pr_remote="$(echo "${my_pr}" | cut -d':' -f1 | tr '[:upper:]' '[:lower:]')"
-pr_branch="$(echo "${my_pr}" | cut -d':' -f2-)"
-pr_branch_safe="$(echo "${pr_branch}" | sed 's:/:_:g')"
+pr_remote=$(echo "${my_pr}" | cut -d':' -f1 | tr '[:upper:]' '[:lower:]')
+pr_branch=$(echo "${my_pr}" | cut -d':' -f2-)
+pr_branch_safe=$(echo "${pr_branch}" | sed 's:/:_:g')
 our_branch="${3:-"${pr_branch}"}"
+our_branch=$(echo "${our_branch}" | sed 's:/:_:g')
 their_repo="${4:-"${my_repo}"}"
 
 echo git remote add "${pr_remote}" "ssh://git@github.com/${pr_remote}/${their_repo}.git" || true
 git remote add "${pr_remote}" "ssh://git@github.com/${pr_remote}/${their_repo}.git" || true
 echo git fetch "${pr_remote}"
 git fetch "${pr_remote}"
-echo git checkout -b "${our_branch}" "${pr_remote}/${pr_branch}" '||' git checkout "${our_branch}"
-git checkout -b "${our_branch}" "${pr_remote}/${pr_branch}" || git checkout "${our_branch}"
+echo git checkout -b "${our_branch}" "${pr_remote}/${pr_branch}" '||' git switch "${our_branch}"
+git checkout -b "${our_branch}" "${pr_remote}/${pr_branch}" || git switch "${our_branch}"
 echo ""
 echo "Here are your next steps:"
 mkdir -p ./gh-review-branchs/
