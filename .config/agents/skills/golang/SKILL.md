@@ -5,7 +5,7 @@ description: Go development conventions and workflow. Use when writing Go HTTP h
 
 ## Tech stack
 
-- **Go 1.22+** — uses `net/http` method routing and `PathValue`
+- **Go 1.26+** — uses `net/http` method routing and `PathValue`
 - **Router** — `net/http` stdlib (`mux.HandleFunc("GET /path/{id}", handler)`)
 - **Middleware** — `github.com/therootcompany/golib/http/middleware`
 - **SQL** — sqlc + `github.com/jackc/pgx/v5` (PostgreSQL) or `database/sql` (MariaDB)
