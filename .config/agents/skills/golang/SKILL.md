@@ -137,6 +137,12 @@ If the project uses a `_migrations` tracking table:
 - Down migration ends with: `DELETE FROM _migrations WHERE id = '...'`
 - Generate migration ID with: `openssl rand -hex 4`
 
+## Production-first design
+
+Utilities and servers are built for production from the start — not "we'll harden it
+later." Error handling, logging, auth, and graceful shutdown are part of the initial
+implementation, not polish. Don't scaffold throwaway code; write the real thing.
+
 ## Testing
 
 Prefer testing real code over mocks. Avoid `httptest` recording and interface mocks
