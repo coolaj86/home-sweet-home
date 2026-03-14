@@ -150,6 +150,13 @@ when the code itself or an appropriate test environment can be tested directly. 
 tests that exercise actual behavior — real DB queries, real handler logic — rather than
 substituting fakes that only verify wiring.
 
+## Updating this skill
+
+When documenting a language feature or API pattern, cite the version that introduced it
+separately from the project's minimum version. The introduction version explains *why*
+the pattern exists and helps readers assess compatibility in other contexts; the project
+minimum tells you what you can unconditionally rely on here.
+
 ## Pre-commit checks
 
 ```sh
