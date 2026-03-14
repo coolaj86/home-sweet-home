@@ -22,7 +22,7 @@ Useful CLI tools:
 
 ## Routing
 
-Go 1.22+ `net/http` supports method prefixes and path parameters natively:
+Go 1.22 added method prefixes and path parameters to `net/http` natively (Go 1.26+ required):
 
 ```go
 mux := http.NewServeMux()
