@@ -2,8 +2,11 @@
 
 - **ALWAYS commit before summarizing work for review.** Uncommitted work in worktrees has been lost — commit is the only safe checkpoint.
 - **Make atomic commits at the end of every work loop before responding.** Committing is non-destructive — don't ask, just commit. Each commit should be a coherent unit of change.
+- **Prefix your temporary comments** with `AGENT: `. Only remove your own comments when cleaning up.
 - **NEVER force-remove worktrees.** If `git worktree remove` warns about modified/untracked files, STOP and ask the user.
-- **Before any destructive action (--force, rm -rf, reset --hard), always ask.** The cost of pausing is low; the cost of lost work is high.
+- Don't commit project-specific details to the global agent configs and skills
+- **ASK before any destructive action (--force, rm -rf, reset --hard)** The cost of pausing is low; the cost of lost work is high.
+- Keep private stuff private
 
 # Project & Directory Conventions
 
@@ -11,7 +14,11 @@
 
 # Tool Preferences
 
-- **Never use Python.** For JSON processing, use `jq`. For anything more complex, write a Go tool.
+- **Never use Python.**
+- Use `jq` JSON processing
+- Write a specific Go tool for more complex tasks
+- Write POSIX shell scripts (shellcheck and shfmt are installed)
+- `webi` is available for installing tools
 
 # Code Design
 
@@ -32,6 +39,7 @@ The `repo-context` MCP server provides fast, pre-analyzed context for Go codebas
 **Setup:** `claude mcp add repo-context --scope user -e MCP_STORAGE_PATH=.../data/contexts -e MCP_TEMP_DIR=/tmp/mcp-repos -- mcp-repo-context` (stores in `~/.claude.json`, NOT `~/.claude/.mcp.json`)
 
 **Available tools after analysis:**
+
 - `smart_query` — natural language questions, auto-routes to the right tool (~2-4k tokens)
 - `get_function_context` — what a function does: behavior, callers, SQL, HTTP calls (~4k tokens)
 - `search_context` — find functions/types by name (~2k tokens)
@@ -40,6 +48,7 @@ The `repo-context` MCP server provides fast, pre-analyzed context for Go codebas
 - `search_by_concept` — find auth, validation, handler code (~3k tokens)
 
 **Fall back to Explore/Grep/Read when:**
+
 - You need exact source code (MCP gives structure and summaries, not raw source)
 - Non-Go files or non-code content
 
@@ -57,11 +66,13 @@ The `repo-context` MCP server provides fast, pre-analyzed context for Go codebas
 # Shell Naming Conventions
 
 **Variables:**
+
 - `ALL_CAPS` — environment variables only (`PATH`, `HOME`, `WEBI_VERSION`)
 - `g_varname` — global to the script (and sourced scripts)
 - `b_varname` — block-scoped (inside a function, loop, or conditional)
 - `a_varname` — function arguments
 
 **Functions and commands:**
+
 - `fn_name` — helper functions (anything other than the script's main/entry function)
 - `cmd_name` — command aliases, e.g. `cmd_curl='curl --fail-with-body -sSL'`
