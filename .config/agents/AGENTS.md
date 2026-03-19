@@ -6,6 +6,7 @@
 - **NEVER force-remove worktrees.** If `git worktree remove` warns about modified/untracked files, STOP and ask the user.
 - Don't commit project-specific details to the global agent configs and skills
 - **ASK before any destructive action (--force, rm -rf, reset --hard)** The cost of pausing is low; the cost of lost work is high.
+- NEVER use /tmp. Always create a local ./agent-session.tmp.d/ and add `tmp`, `*.tmp.d` and `*.tmp` to .gitignore.
 - Keep private stuff private
 
 # Project & Directory Conventions
