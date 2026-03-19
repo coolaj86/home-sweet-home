@@ -8,6 +8,7 @@ description: Go development conventions and workflow. Use when writing Go HTTP h
 | Component       | Library / Notes                                                        |
 | --------------- | ---------------------------------------------------------------------- |
 | Go 1.26+        | many new features since Go 1.22                                        |
+| ENV config      | godotenv                                                               |
 | HTTP Router     | `net/http` with `mux.HandleFunc("GET /{id}", handler)` and `PathValue` |
 | HTTP Middleware | `github.com/therootcompany/golib/http/middleware`                      |
 | HTTP Embed      | `github.com/vearutop/statigz`                                          |
@@ -95,7 +96,7 @@ mux.Handle("GET /admin/items", adminM.Then(handleAdminListItems))
 # Config
 
 - We don't use YAML unless it's the only option for a 3rd party tool
-- We use POSIX .env for ENVs
+- We use POSIX .env for ENVs (with godotenv and a --envfile flag)
 - We also use TSV (CSV)
 - always add bins to .gitignore
 

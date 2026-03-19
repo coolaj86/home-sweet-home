@@ -33,7 +33,7 @@
 - `webi` is available for installing tools
 - We don't use YAML unless it's the only option for a 3rd party tool
 - We prefer TSV (CSV)
-- We use POSIX .env for ENVs
+- We use POSIX .env for ENVs (with godotenv, or dotenv@16 for node projects)
 
 # Code Design
 
