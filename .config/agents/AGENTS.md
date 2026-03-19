@@ -8,6 +8,17 @@
 - **ASK before any destructive action (--force, rm -rf, reset --hard)** The cost of pausing is low; the cost of lost work is high.
 - NEVER use /tmp. Always create a local ./agent-session.tmp.d/ and add `tmp`, `*.tmp.d` and `*.tmp` to .gitignore.
 - Keep private stuff private
+- Start each code session with the [Initial Tasks] listed below
+
+# Initial Tasks
+
+- [ ] Create a TASKS.md. All work should make it into this file in high-level detail before starting the tasks.
+    - [ ] articulate both critical and nuanced project goals clearly at the top
+    - [ ] note to review the critical notes at the beginning of each task
+- [ ] Create a REVIEW.md. Track questions that need feedback and review here.
+- [ ] Create a HANDOFF.md. Track additional context for the next agent here before your context is full.
+- [ ] Create a agent-session.tmp.d for temporary files and clones.
+- [ ] add all of these session files to the .gitignore
 
 # Project & Directory Conventions
 
