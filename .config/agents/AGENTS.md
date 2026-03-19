@@ -19,6 +19,9 @@
 - Write a specific Go tool for more complex tasks
 - Write POSIX shell scripts (shellcheck and shfmt are installed)
 - `webi` is available for installing tools
+- We don't use YAML unless it's the only option for a 3rd party tool
+- We prefer TSV (CSV)
+- We use POSIX .env for ENVs
 
 # Code Design
 

@@ -92,6 +92,13 @@ mux.Handle("GET /api/items", authM.Then(handleListItems))
 mux.Handle("GET /admin/items", adminM.Then(handleAdminListItems))
 ```
 
+# Config
+
+- We don't use YAML unless it's the only option for a 3rd party tool
+- We use POSIX .env for ENVs
+- We also use TSV (CSV)
+- always add bins to .gitignore
+
 ## API Data
 
 Prefer TSV over JSON.
@@ -378,3 +385,24 @@ go vet ./...
 
 If sqlc-generated packages produce spurious vet warnings, use a wrapper script that
 excludes them. See the [go-sqlc skill](~/.config/agents/skills/go-sqlc/SKILL.md).
+
+## Package documentation
+
+Use `go doc` to get the latest information about a package, type, or function:
+
+```sh
+# Package overview
+go doc github.com/therootcompany/golib/auth/jwt
+
+# Specific type or function
+go doc github.com/therootcompany/golib/auth/jwt.Signer
+go doc github.com/therootcompany/golib/auth/jwt.NewSigner
+
+# All symbols in a package
+go doc -all github.com/therootcompany/golib/auth/jwt
+
+# Show source
+go doc -src github.com/therootcompany/golib/auth/jwt.Signer
+```
+
+This is more reliable than guessing API signatures from import paths or memory.
